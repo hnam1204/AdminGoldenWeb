@@ -3,122 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
+  <title>Bảng điều khiển</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body  data-page-title="Dashboard">
+<body data-page-title="Bảng điều khiển">
+  <div class="mobile-backdrop" id="mobileBackdrop"></div>
   <div class="admin-shell">
-
-<aside class="sidebar">
-  <div class="brand">
-    <h1>Golden Coffee</h1>
-    <p>Management System</p>
-  </div>
-  <nav class="nav" id="sidebarNav">
-    <a class="nav-link" data-nav="dashboard" href="index.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
-    <a class="nav-link" data-nav="banners" href="banners.html"><span class="nav-icon">▤</span><span>Banner</span></a>
-    <a class="nav-link" data-nav="categories" href="categories.html"><span class="nav-icon">◈</span><span>Danh mục</span></a>
-    <a class="nav-link" data-nav="news" href="news.html"><span class="nav-icon">▣</span><span>Tin tức</span></a>
-    <a class="nav-link" data-nav="orders" href="orders.html"><span class="nav-icon">🛒</span><span>Đơn hàng</span></a>
-    <a class="nav-link" data-nav="products" href="products.html"><span class="nav-icon">◫</span><span>Sản phẩm</span></a>
-    <a class="nav-link" data-nav="users" href="users.html"><span class="nav-icon">👥</span><span>Người dùng</span></a>
-  </nav>
-  <div class="sidebar-footer">V2.4.0 STABLE</div>
-</aside>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <h1>Golden Coffee</h1>
+        <p>Hệ thống quản trị</p>
+      </div>
+      <nav class="nav" id="sidebarNav">
+        <a class="nav-link" data-nav="dashboard" href="index.html"><span class="nav-icon">📊</span><span>Bảng điều khiển</span></a>
+        <a class="nav-link" data-nav="banners" href="banners.html"><span class="nav-icon">🖼️</span><span>Biểu ngữ</span></a>
+        <a class="nav-link" data-nav="categories" href="categories.html"><span class="nav-icon">📂</span><span>Danh mục</span></a>
+        <a class="nav-link" data-nav="news" href="news.html"><span class="nav-icon">📰</span><span>Tin tức</span></a>
+        <a class="nav-link" data-nav="orders" href="orders.html"><span class="nav-icon">🛒</span><span>Đơn hàng</span></a>
+        <a class="nav-link" data-nav="products" href="products.html"><span class="nav-icon">☕</span><span>Sản phẩm</span></a>
+        <a class="nav-link" data-nav="users" href="users.html"><span class="nav-icon">👥</span><span>Người dùng</span></a>
+      </nav>
+      <div class="sidebar-footer">Phiên bản 2.4.0</div>
+    </aside>
 
     <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn menu-btn" type="button" id="mobileMenuBtn" aria-label="Mở menu">☰</button>
+          <div>
+            <h2 id="pageTitle">Bảng điều khiển</h2>
+            <p>Theo dõi hoạt động hệ thống theo thời gian thực.</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" aria-label="Thông báo">🔔</button>
+          <button class="icon-btn" type="button" aria-label="Cài đặt">⚙️</button>
+          <div class="profile-chip">
+            <div>
+              <strong>Quản trị viên</strong>
+              <small>trực tuyến</small>
+            </div>
+            <img src="https://i.pravatar.cc/100?img=12" alt="Quản trị viên">
+          </div>
+        </div>
+      </header>
 
-<header class="topbar">
-  <div>
-    <h2 id="pageTitle">Xin chào, Admin</h2>
-    <p>Chào mừng bạn quay trở lại hệ thống quản lý.</p>
-  </div>
-  <div class="topbar-actions">
-    <button class="icon-btn">🔔</button>
-    <button class="icon-btn">⚙️</button>
-    <div class="profile-chip">
-      <div>
-        <strong>Administrator</strong>
-        <small>online</small>
-      </div>
-      <img src="https://i.pravatar.cc/100?img=12" alt="Admin">
-    </div>
-  </div>
-</header>
+      <section class="metrics">
+        <article class="metric-card">
+          <div class="metric-top">
+            <div class="metric-icon">💰</div>
+            <span class="trend trend-up">+12.5%</span>
+          </div>
+          <div class="metric-label">Doanh thu gần đây</div>
+          <div class="metric-value" id="metricRevenue">0 VNĐ</div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top">
+            <div class="metric-icon">👥</div>
+            <span class="trend trend-neutral">+4.2%</span>
+          </div>
+          <div class="metric-label">Người dùng</div>
+          <div class="metric-value" id="metricUsers">0</div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top">
+            <div class="metric-icon">🧾</div>
+            <span class="trend trend-down">-1.2%</span>
+          </div>
+          <div class="metric-label">Đơn hàng</div>
+          <div class="metric-value" id="metricOrders">0</div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top">
+            <div class="metric-icon">🗄️</div>
+            <span class="trend trend-neutral">Ổn định</span>
+          </div>
+          <div class="metric-label">Tải hệ thống</div>
+          <div class="metric-value" id="metricStorage">0%</div>
+        </article>
+      </section>
 
+      <section class="content-grid">
+        <article class="surface-card">
+          <div class="card-head">
+            <div>
+              <h3>Hiệu suất hệ thống</h3>
+              <p>Thống kê đơn hàng theo tuần</p>
+            </div>
+            <div class="segmented">
+              <button class="active" type="button">Tuần này</button>
+              <button type="button">Tuần trước</button>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="systemChart"></canvas>
+          </div>
+        </article>
 
-<section class="metrics">
-  <article class="metric-card">
-    <div class="metric-top">
-      <div class="metric-icon">💵</div>
-      <span class="trend trend-up">+12.5%</span>
-    </div>
-    <div class="metric-label">Total Revenue</div>
-    <div class="metric-value" id="metricRevenue">0</div>
-  </article>
-  <article class="metric-card">
-    <div class="metric-top">
-      <div class="metric-icon">👥</div>
-      <span class="trend trend-neutral">+4.2%</span>
-    </div>
-    <div class="metric-label">Users</div>
-    <div class="metric-value" id="metricUsers">0</div>
-  </article>
-  <article class="metric-card">
-    <div class="metric-top">
-      <div class="metric-icon">🧺</div>
-      <span class="trend trend-down">-1.2%</span>
-    </div>
-    <div class="metric-label">Orders</div>
-    <div class="metric-value" id="metricOrders">0</div>
-  </article>
-  <article class="metric-card">
-    <div class="metric-top">
-      <div class="metric-icon">🗄️</div>
-      <span class="trend trend-neutral">Optimal</span>
-    </div>
-    <div class="metric-label">Storage / System</div>
-    <div class="metric-value" id="metricStorage">0%</div>
-  </article>
-</section>
-
-<section class="content-grid">
-  <article class="surface-card">
-    <div class="card-head">
-      <div>
-        <h3>Hiệu suất hệ thống</h3>
-        <p>Phân tích dữ liệu hoạt động trong 30 ngày gần nhất</p>
-      </div>
-      <div class="segmented">
-        <button class="active" type="button">Revenue</button>
-        <button type="button">Users</button>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="systemChart"></canvas>
-    </div>
-  </article>
-
-  <aside class="surface-card">
-    <div class="card-head">
-      <div>
-        <h3>Hoạt động gần đây</h3>
-        <p>Dữ liệu trực tiếp từ Firebase</p>
-      </div>
-    </div>
-    <div class="activity-list" id="activityList"></div>
-    <div class="quick-grid" id="quickGrid"></div>
-  </aside>
-</section>
-
-<button class="float-btn" type="button">+</button>
-
+        <aside class="surface-card">
+          <div class="card-head">
+            <div>
+              <h3>Hoạt động gần đây</h3>
+              <p>Dữ liệu được đồng bộ từ Firebase.</p>
+            </div>
+          </div>
+          <div class="activity-list" id="activityList"></div>
+          <div class="quick-grid" id="quickGrid"></div>
+        </aside>
+      </section>
     </main>
   </div>
+
   <div class="toast-root" id="toastRoot"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="assets/js/pages/dashboard.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="js/pages/dashboard.js"></script>
 </body>
 </html>

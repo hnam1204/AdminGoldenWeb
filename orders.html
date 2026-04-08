@@ -6,90 +6,115 @@
   <title>Đơn hàng</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body  data-page-title="Đơn hàng">
+<body data-page-title="Đơn hàng">
+  <div class="mobile-backdrop" id="mobileBackdrop"></div>
   <div class="admin-shell">
-
-<aside class="sidebar">
-  <div class="brand">
-    <h1>Golden Coffee</h1>
-    <p>Management System</p>
-  </div>
-  <nav class="nav" id="sidebarNav">
-    <a class="nav-link" data-nav="dashboard" href="index.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
-    <a class="nav-link" data-nav="banners" href="banners.html"><span class="nav-icon">▤</span><span>Banner</span></a>
-    <a class="nav-link" data-nav="categories" href="categories.html"><span class="nav-icon">◈</span><span>Danh mục</span></a>
-    <a class="nav-link" data-nav="news" href="news.html"><span class="nav-icon">▣</span><span>Tin tức</span></a>
-    <a class="nav-link" data-nav="orders" href="orders.html"><span class="nav-icon">🛒</span><span>Đơn hàng</span></a>
-    <a class="nav-link" data-nav="products" href="products.html"><span class="nav-icon">◫</span><span>Sản phẩm</span></a>
-    <a class="nav-link" data-nav="users" href="users.html"><span class="nav-icon">👥</span><span>Người dùng</span></a>
-  </nav>
-  <div class="sidebar-footer">V2.4.0 STABLE</div>
-</aside>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <h1>Golden Coffee</h1>
+        <p>Hệ thống quản trị</p>
+      </div>
+      <nav class="nav" id="sidebarNav">
+        <a class="nav-link" data-nav="dashboard" href="index.html"><span class="nav-icon">📊</span><span>Bảng điều khiển</span></a>
+        <a class="nav-link" data-nav="banners" href="banners.html"><span class="nav-icon">🖼️</span><span>Biểu ngữ</span></a>
+        <a class="nav-link" data-nav="categories" href="categories.html"><span class="nav-icon">📂</span><span>Danh mục</span></a>
+        <a class="nav-link" data-nav="news" href="news.html"><span class="nav-icon">📰</span><span>Tin tức</span></a>
+        <a class="nav-link" data-nav="orders" href="orders.html"><span class="nav-icon">🛒</span><span>Đơn hàng</span></a>
+        <a class="nav-link" data-nav="products" href="products.html"><span class="nav-icon">☕</span><span>Sản phẩm</span></a>
+        <a class="nav-link" data-nav="users" href="users.html"><span class="nav-icon">👥</span><span>Người dùng</span></a>
+      </nav>
+      <div class="sidebar-footer">Phiên bản 2.4.0</div>
+    </aside>
 
     <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn menu-btn" type="button" id="mobileMenuBtn" aria-label="Mở menu">☰</button>
+          <div>
+            <h2 id="pageTitle">Đơn hàng</h2>
+            <p>Theo dõi đơn đặt hàng và cập nhật trạng thái xử lý.</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" aria-label="Thông báo">🔔</button>
+          <button class="icon-btn" type="button" aria-label="Cài đặt">⚙️</button>
+          <div class="profile-chip">
+            <div>
+              <strong>Quản trị viên</strong>
+              <small>trực tuyến</small>
+            </div>
+            <img src="https://i.pravatar.cc/100?img=12" alt="Quản trị viên">
+          </div>
+        </div>
+      </header>
 
-<header class="topbar">
-  <div>
-    <h2 id="pageTitle">Xin chào, Admin</h2>
-    <p>Chào mừng bạn quay trở lại hệ thống quản lý.</p>
-  </div>
-  <div class="topbar-actions">
-    <button class="icon-btn">🔔</button>
-    <button class="icon-btn">⚙️</button>
-    <div class="profile-chip">
-      <div>
-        <strong>Administrator</strong>
-        <small>online</small>
-      </div>
-      <img src="https://i.pravatar.cc/100?img=12" alt="Admin">
-    </div>
-  </div>
-</header>
+      <section class="orders-layout">
+        <section class="page-card">
+          <div class="page-toolbar">
+            <div>
+              <h3>Đơn hàng</h3>
+              <p>Đọc trực tiếp dữ liệu từ bộ sưu tập orders trên Firebase.</p>
+            </div>
+            <div class="toolbar-actions">
+              <input id="orderSearch" class="search-input" type="text" placeholder="Tìm đơn hàng, khách hàng...">
+              <div id="orderFilterBar" class="filter-bar"></div>
+            </div>
+          </div>
 
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Mã đơn</th>
+                  <th>Khách hàng</th>
+                  <th>Điện thoại</th>
+                  <th>Địa chỉ</th>
+                  <th>Thanh toán</th>
+                  <th>Trạng thái</th>
+                  <th>Tổng tiền</th>
+                  <th>Ngày đặt</th>
+                  <th class="actions-col">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody"></tbody>
+            </table>
+          </div>
+          <div id="ordersPagination" class="pagination-bar"></div>
+        </section>
 
-<section class="orders-layout">
-  <section class="page-card">
-    <div class="page-toolbar">
-      <div>
-        <h3>Đơn hàng</h3>
-        <p>Đọc trực tiếp collection orders từ Firebase.</p>
-      </div>
-      <div class="toolbar-actions">
-        <input id="orderSearch" class="search-input" type="text" placeholder="Tìm đơn hàng, khách hàng...">
-      </div>
-    </div>
-
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Mã đơn</th>
-            <th>Khách hàng</th>
-            <th>Điện thoại</th>
-            <th>Địa chỉ</th>
-            <th>Thanh toán</th>
-            <th>Trạng thái</th>
-            <th>Tổng tiền</th>
-            <th>Ngày</th>
-            <th class="actions-col">Thao tác</th>
-          </tr>
-        </thead>
-        <tbody id="ordersTableBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <aside class="page-card" id="orderDetailPanel">
-    <div class="detail-card empty">
-      <h3>Chi tiết đơn hàng</h3>
-      <p>Chọn một đơn hàng để xem chi tiết sản phẩm, thanh toán và trạng thái.</p>
-    </div>
-  </aside>
-</section>
-
+        <aside class="page-card" id="orderDetailPanel">
+          <div class="detail-card empty">
+            <h3>Chi tiết đơn hàng</h3>
+            <p>Chọn một đơn hàng để xem chi tiết sản phẩm, thanh toán và trạng thái.</p>
+          </div>
+        </aside>
+      </section>
     </main>
   </div>
+
+  <div class="modal" id="statusModal">
+    <div class="modal-overlay" id="statusModalOverlay"></div>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h4 id="statusModalTitle">Cập nhật trạng thái đơn</h4>
+        <button id="statusModalClose" class="icon-close" type="button">✕</button>
+      </div>
+      <form id="statusForm">
+        <label class="field field-full">
+          <span>Trạng thái mới</span>
+          <select id="statusSelect" name="status" required>
+            <option value="">-- Chọn trạng thái --</option>
+          </select>
+        </label>
+        <div class="form-actions">
+          <button class="secondary-btn" type="button" id="statusCancelBtn">Hủy</button>
+          <button class="primary-btn" type="submit" id="statusSaveBtn">Lưu trạng thái</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="toast-root" id="toastRoot"></div>
-  <script type="module" src="assets/js/pages/orders.js"></script>
+  <script type="module" src="js/pages/orders.js"></script>
 </body>
 </html>

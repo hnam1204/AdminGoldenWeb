@@ -6,87 +6,90 @@
   <title>Sản phẩm</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body data-collection="products" data-page-title="Sản phẩm">
+<body data-page-title="Sản phẩm">
+  <div class="mobile-backdrop" id="mobileBackdrop"></div>
   <div class="admin-shell">
-
-<aside class="sidebar">
-  <div class="brand">
-    <h1>Golden Coffee</h1>
-    <p>Management System</p>
-  </div>
-  <nav class="nav" id="sidebarNav">
-    <a class="nav-link" data-nav="dashboard" href="index.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
-    <a class="nav-link" data-nav="banners" href="banners.html"><span class="nav-icon">▤</span><span>Banner</span></a>
-    <a class="nav-link" data-nav="categories" href="categories.html"><span class="nav-icon">◈</span><span>Danh mục</span></a>
-    <a class="nav-link" data-nav="news" href="news.html"><span class="nav-icon">▣</span><span>Tin tức</span></a>
-    <a class="nav-link" data-nav="orders" href="orders.html"><span class="nav-icon">🛒</span><span>Đơn hàng</span></a>
-    <a class="nav-link" data-nav="products" href="products.html"><span class="nav-icon">◫</span><span>Sản phẩm</span></a>
-    <a class="nav-link" data-nav="users" href="users.html"><span class="nav-icon">👥</span><span>Người dùng</span></a>
-  </nav>
-  <div class="sidebar-footer">V2.4.0 STABLE</div>
-</aside>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <h1>Golden Coffee</h1>
+        <p>Hệ thống quản trị</p>
+      </div>
+      <nav class="nav" id="sidebarNav">
+        <a class="nav-link" data-nav="dashboard" href="index.html"><span class="nav-icon">📊</span><span>Bảng điều khiển</span></a>
+        <a class="nav-link" data-nav="banners" href="banners.html"><span class="nav-icon">🖼️</span><span>Biểu ngữ</span></a>
+        <a class="nav-link" data-nav="categories" href="categories.html"><span class="nav-icon">📂</span><span>Danh mục</span></a>
+        <a class="nav-link" data-nav="news" href="news.html"><span class="nav-icon">📰</span><span>Tin tức</span></a>
+        <a class="nav-link" data-nav="orders" href="orders.html"><span class="nav-icon">🛒</span><span>Đơn hàng</span></a>
+        <a class="nav-link" data-nav="products" href="products.html"><span class="nav-icon">☕</span><span>Sản phẩm</span></a>
+        <a class="nav-link" data-nav="users" href="users.html"><span class="nav-icon">👥</span><span>Người dùng</span></a>
+      </nav>
+      <div class="sidebar-footer">Phiên bản 2.4.0</div>
+    </aside>
 
     <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn menu-btn" type="button" id="mobileMenuBtn" aria-label="Mở menu">☰</button>
+          <div>
+            <h2 id="pageTitle">Sản phẩm</h2>
+            <p>Quản lý thông tin sản phẩm, danh mục và trạng thái bán.</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" aria-label="Thông báo">🔔</button>
+          <button class="icon-btn" type="button" aria-label="Cài đặt">⚙️</button>
+          <div class="profile-chip">
+            <div>
+              <strong>Quản trị viên</strong>
+              <small>trực tuyến</small>
+            </div>
+            <img src="https://i.pravatar.cc/100?img=12" alt="Quản trị viên">
+          </div>
+        </div>
+      </header>
 
-<header class="topbar">
-  <div>
-    <h2 id="pageTitle">Xin chào, Admin</h2>
-    <p>Chào mừng bạn quay trở lại hệ thống quản lý.</p>
-  </div>
-  <div class="topbar-actions">
-    <button class="icon-btn">🔔</button>
-    <button class="icon-btn">⚙️</button>
-    <div class="profile-chip">
-      <div>
-        <strong>Administrator</strong>
-        <small>online</small>
-      </div>
-      <img src="https://i.pravatar.cc/100?img=12" alt="Admin">
-    </div>
-  </div>
-</header>
+      <section class="page-card">
+        <div class="page-toolbar">
+          <div>
+            <h3 id="pageHeading">Sản phẩm</h3>
+            <p id="pageCaption">Quản lý dữ liệu bộ sưu tập.</p>
+          </div>
+          <div class="toolbar-actions">
+            <input id="searchInput" class="search-input" type="text" placeholder="Tìm kiếm...">
+            <div id="filterBar" class="filter-bar"></div>
+            <button id="openCreateModal" class="primary-btn" type="button">Thêm mới</button>
+          </div>
+        </div>
 
-
-<section class="page-card">
-  <div class="page-toolbar">
-    <div>
-      <h3 id="pageHeading">Dữ liệu</h3>
-      <p id="pageCaption">Quản lý dữ liệu collection.</p>
-    </div>
-    <div class="toolbar-actions">
-      <input id="searchInput" class="search-input" type="text" placeholder="Tìm kiếm nhanh...">
-      <button id="openCreateModal" class="primary-btn" type="button">Thêm mới</button>
-    </div>
-  </div>
-
-  <div class="table-wrap">
-    <table class="data-table">
-      <thead id="tableHead"></thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-  </div>
-</section>
-
-<div class="modal" id="modal">
-  <div class="modal-overlay" id="modalOverlay"></div>
-  <div class="modal-card">
-    <div class="modal-head">
-      <h4 id="modalTitle">Thêm dữ liệu</h4>
-      <button id="closeModal" class="icon-close" type="button">✕</button>
-    </div>
-    <form id="entityForm">
-      <div class="form-grid" id="formGrid"></div>
-      <div class="form-actions">
-        <button class="secondary-btn" type="button" id="closeModalSecondary">Hủy</button>
-        <button class="primary-btn" type="submit" id="saveBtn">Lưu dữ liệu</button>
-      </div>
-    </form>
-  </div>
-</div>
-
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div id="paginationBar" class="pagination-bar"></div>
+      </section>
     </main>
   </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h4 id="modalTitle">Thêm dữ liệu</h4>
+        <button id="closeModal" class="icon-close" type="button">✕</button>
+      </div>
+      <form id="entityForm">
+        <div class="form-grid" id="formGrid"></div>
+        <div class="form-actions">
+          <button class="secondary-btn" type="button" id="closeModalSecondary">Hủy</button>
+          <button class="primary-btn" type="submit" id="saveBtn">Lưu dữ liệu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="toast-root" id="toastRoot"></div>
-  <script type="module" src="assets/js/pages/generic-collection.js"></script>
+  <script type="module" src="js/pages/products.js"></script>
 </body>
 </html>

@@ -1,6 +1,12 @@
-import { initLayout } from "../components/layout.js";
-import { formatCompactK, formatCurrency } from "../utils/format.js";
-import { getCollection } from "../../../firebase/firestore-service.js";
+import { initLayout } from "./layout.js";
+import { formatCurrency } from "../utils/format.js";
+import {
+  computeRevenueFromOrders,
+  getCollectionCount,
+  getRecentNews,
+  getRecentOrders,
+  getRecentUsers
+} from "../services/dashboard-service.js";
 
 initLayout("dashboard");
 
@@ -12,49 +18,61 @@ const activityEl = document.getElementById("activityList");
 const quickGrid = document.getElementById("quickGrid");
 
 let chart;
-
 loadDashboard();
 
 async function loadDashboard() {
   try {
-    const [orders, users, products, news] = await Promise.all([
-      getCollection("orders"),
-      getCollection("users"),
-      getCollection("products"),
-      getCollection("news")
+    const [
+      usersCount,
+      ordersCount,
+      productsCount,
+      newsCount,
+      recentOrders,
+      recentNews,
+      recentUsers
+    ] = await Promise.all([
+      getCollectionCount("users"),
+      getCollectionCount("orders"),
+      getCollectionCount("products"),
+      getCollectionCount("news"),
+      getRecentOrders(30),
+      getRecentNews(6),
+      getRecentUsers(6)
     ]);
 
-    const totalRevenue = orders.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0);
+    const revenue = computeRevenueFromOrders(recentOrders);
+    revenueEl.textContent = formatCurrency(revenue);
+    usersEl.textContent = Number(usersCount).toLocaleString("vi-VN");
+    ordersEl.textContent = Number(ordersCount).toLocaleString("vi-VN");
+    storageEl.textContent = `${Math.min(99, 66 + Math.round(productsCount * 0.4))}%`;
 
-    revenueEl.textContent = formatCompactK(totalRevenue);
-    usersEl.textContent = Number(users.length).toLocaleString("vi-VN");
-    ordersEl.textContent = Number(orders.length).toLocaleString("vi-VN");
-    storageEl.textContent = `${Math.min(99, 70 + Math.round(products.length * 0.7))}.${products.length % 10}%`;
-
-    renderActivity(orders, news, users);
-    renderQuickGrid(products, news, users);
-    renderChart(orders);
+    renderActivity(recentOrders, recentNews, recentUsers);
+    renderQuickGrid(productsCount, newsCount, usersCount);
+    renderChart(recentOrders);
   } catch (error) {
     console.error(error);
-    activityEl.innerHTML = `<p class="empty-note">Không thể tải dữ liệu dashboard.</p>`;
+    activityEl.innerHTML = `<p class="empty-note">Không thể tải dữ liệu bảng điều khiển.</p>`;
   }
 }
 
 function renderActivity(orders, news, users) {
+  const typeMap = { event: "Sự kiện", promotion: "Khuyến mãi", news: "Tin tức" };
+  const roleMap = { admin: "Quản trị viên", customer: "Khách hàng" };
+
   const activities = [
     ...orders.slice(0, 3).map(item => ({
       title: `Đơn ${item.orderId || item.docId} từ ${item.customerName || "Khách hàng"}`,
-      meta: `${item.status || "Đang xử lý"} • ${formatCurrency(item.totalPrice)}`,
+      meta: `${item.status || "Đang xử lý"} • ${formatCurrency(item.totalPrice || 0)}`,
       avatar: "🛍️"
     })),
     ...news.slice(0, 2).map(item => ({
-      title: `Tin tức mới: ${item.title || "Bài viết"}`,
-      meta: item.type || "news",
+      title: `Tin mới: ${item.title || "Bài viết"}`,
+      meta: typeMap[item.type] || "Tin tức",
       avatar: "📰"
     })),
     ...users.slice(0, 2).map(item => ({
-      title: `Người dùng: ${item.fullName || item.email || "User"}`,
-      meta: item.role || "customer",
+      title: `Người dùng: ${item.fullName || item.email || "Người dùng"}`,
+      meta: roleMap[item.role] || "Khách hàng",
       avatar: "👤"
     }))
   ].slice(0, 6);
@@ -70,11 +88,11 @@ function renderActivity(orders, news, users) {
   `).join("");
 }
 
-function renderQuickGrid(products, news, users) {
+function renderQuickGrid(productsCount, newsCount, usersCount) {
   const cards = [
-    { label: "Sản phẩm", value: products.length, note: "Collection products" },
-    { label: "Tin tức", value: news.length, note: "Collection news" },
-    { label: "Người dùng", value: users.length, note: "Collection users" }
+    { label: "Sản phẩm", value: productsCount, note: "Bộ sưu tập products" },
+    { label: "Tin tức", value: newsCount, note: "Bộ sưu tập news" },
+    { label: "Người dùng", value: usersCount, note: "Bộ sưu tập users" }
   ];
 
   quickGrid.innerHTML = cards.map(card => `
@@ -88,9 +106,9 @@ function renderQuickGrid(products, news, users) {
 
 function renderChart(orders) {
   const ctx = document.getElementById("systemChart");
-  if (!ctx) return;
+  if (!ctx || typeof Chart === "undefined") return;
 
-  const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  const labels = ["Th 2", "Th 3", "Th 4", "Th 5", "Th 6", "Th 7", "CN"];
   const current = [3, 7, 10, 8, 12, 9, 6];
   const previous = [2, 4, 5, 7, 8, 6, 5];
 
@@ -106,17 +124,17 @@ function renderChart(orders) {
   chart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: days,
+      labels,
       datasets: [
         {
-          label: "Tháng hiện tại",
+          label: "Tuần này",
           data: current,
           borderRadius: 20,
           backgroundColor: "#3a7a67",
           maxBarThickness: 34
         },
         {
-          label: "Tháng trước",
+          label: "Tuần trước",
           data: previous,
           borderRadius: 20,
           backgroundColor: "#e7e4df",
