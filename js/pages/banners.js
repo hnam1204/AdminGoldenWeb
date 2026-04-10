@@ -1,5 +1,12 @@
 import { initCollectionPage } from "./collection-page.js";
-import { createBanner, listBanners, removeBanner, updateBanner } from "../services/banner-service.js";
+import {
+  createBanner,
+  generateRandomBannerId,
+  listBanners,
+  removeBanner,
+  updateBanner
+} from "../services/banner-service.js";
+import { parseInteger } from "../utils/validators.js";
 
 initCollectionPage({
   navKey: "banners",
@@ -14,6 +21,7 @@ initCollectionPage({
     { key: "desc", label: "Mô tả" }
   ],
   fields: [
+    { key: "id", label: "Mã ID", type: "number", required: true, readonly: true, disabled: true },
     { key: "title", label: "Tiêu đề", type: "text", required: true },
     { key: "desc", label: "Mô tả", type: "textarea" },
     { key: "imageUrl", label: "Ảnh biểu ngữ", type: "image-source", required: true, full: true }
@@ -24,11 +32,30 @@ initCollectionPage({
     update: updateBanner,
     remove: removeBanner
   },
-  normalizePayload(raw) {
+  async getCreateDefaults() {
     return {
-      title: raw.title || "",
-      desc: raw.desc || "",
-      imageUrl: raw.imageUrl || ""
+      id: await generateRandomBannerId()
+    };
+  },
+  async normalizePayload(raw, { editingId }) {
+    let id = parseInteger(raw.id, 0);
+    if (!id) {
+      if (!editingId) {
+        throw new Error("Không thể tạo Mã ID biểu ngữ.");
+      }
+      id = await generateRandomBannerId();
+    }
+
+    const title = String(raw.title ?? raw.name ?? "").trim();
+    if (!title) {
+      throw new Error("Tiêu đề không được để trống.");
+    }
+
+    return {
+      id,
+      title,
+      desc: String(raw.desc || "").trim(),
+      imageUrl: String(raw.imageUrl || "").trim()
     };
   }
 });

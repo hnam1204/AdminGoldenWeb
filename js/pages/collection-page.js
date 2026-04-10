@@ -16,6 +16,15 @@ function toOption(option) {
   return { value: String(option.value ?? ""), label: option.label ?? String(option.value ?? "") };
 }
 
+function buildFieldAttrs(field, options = {}) {
+  const { allowReadonly = true } = options;
+  const attrs = [];
+  if (field.required) attrs.push("required");
+  if (allowReadonly && field.readonly) attrs.push("readonly");
+  if (field.disabled) attrs.push("disabled");
+  return attrs.join(" ");
+}
+
 export function initCollectionPage(config) {
   const state = {
     records: [],
@@ -68,7 +77,12 @@ export function initCollectionPage(config) {
   loadData({ reset: true });
 
   function bindEvents() {
-    elements.openCreateModal?.addEventListener("click", () => openModal());
+    elements.openCreateModal?.addEventListener("click", () => {
+      openModal().catch(error => {
+        console.error(error);
+        showToast(error?.message || "KhÃ´ng thá»ƒ má»Ÿ biá»ƒu máº«u.", "error");
+      });
+    });
     elements.closeModalBtn?.addEventListener("click", closeModal);
     elements.closeModalSecondary?.addEventListener("click", closeModal);
     elements.modalOverlay?.addEventListener("click", closeModal);
@@ -124,11 +138,13 @@ export function initCollectionPage(config) {
     state.imageStates.clear();
 
     elements.formGrid.innerHTML = config.fields.map(field => {
+      const attrs = buildFieldAttrs(field);
+
       if (field.type === "textarea") {
         return `
           <label class="field ${field.full ? "field-full" : ""}">
             <span>${escapeHtml(field.label)}</span>
-            <textarea name="${field.key}" ${field.required ? "required" : ""} placeholder="${escapeHtml(field.placeholder || "")}"></textarea>
+            <textarea name="${field.key}" ${attrs} placeholder="${escapeHtml(field.placeholder || "")}"></textarea>
           </label>
         `;
       }
@@ -136,7 +152,7 @@ export function initCollectionPage(config) {
       if (field.type === "checkbox") {
         return `
           <label class="field field-checkbox ${field.full ? "field-full" : ""}">
-            <input type="checkbox" name="${field.key}">
+            <input type="checkbox" name="${field.key}" ${field.disabled ? "disabled" : ""}>
             <span>${escapeHtml(field.label)}</span>
           </label>
         `;
@@ -147,7 +163,7 @@ export function initCollectionPage(config) {
         return `
           <label class="field ${field.full ? "field-full" : ""}">
             <span>${escapeHtml(field.label)}</span>
-            <select name="${field.key}" ${field.required ? "required" : ""}>
+            <select name="${field.key}" ${buildFieldAttrs(field, { allowReadonly: false })}>
               ${options.map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`).join("")}
             </select>
           </label>
@@ -171,7 +187,7 @@ export function initCollectionPage(config) {
       return `
         <label class="field ${field.full ? "field-full" : ""}">
           <span>${escapeHtml(field.label)}</span>
-          <input type="${field.type || "text"}" name="${field.key}" ${field.required ? "required" : ""} placeholder="${escapeHtml(field.placeholder || "")}">
+          <input type="${field.type || "text"}" name="${field.key}" ${attrs} placeholder="${escapeHtml(field.placeholder || "")}">
         </label>
       `;
     }).join("");
@@ -257,7 +273,10 @@ export function initCollectionPage(config) {
     $$("[data-action='edit']", elements.tableBody).forEach(btn => {
       btn.addEventListener("click", () => {
         const row = state.records.find(item => item.docId === btn.dataset.id);
-        openModal(row);
+        openModal(row).catch(error => {
+          console.error(error);
+          showToast(error?.message || "KhÃ´ng thá»ƒ má»Ÿ biá»ƒu máº«u.", "error");
+        });
       });
     });
 
@@ -344,24 +363,50 @@ export function initCollectionPage(config) {
     }
   }
 
-  function fillForm(record = null) {
+  function getFieldInput(fieldKey) {
+    if (!elements.form) return null;
+    return elements.form.querySelector(`[name="${fieldKey}"]`) || elements.form.elements[fieldKey] || null;
+  }
+
+  function fillForm(record = null, options = {}) {
+    const { isEdit = false } = options;
     elements.form.reset();
 
     config.fields.forEach(field => {
-      const input = elements.form.elements[field.key];
+      const input = getFieldInput(field.key);
       if (!input) return;
 
-      if (!record) {
-        if (field.type === "checkbox") input.checked = false;
-        return;
+      if ("readOnly" in input) {
+        input.readOnly = Boolean(field.readonly);
+      }
+      if ("disabled" in input) {
+        input.disabled = Boolean(field.disabled);
       }
 
-      if (field.type === "checkbox") input.checked = Boolean(record[field.key]);
-      else if (field.type === "datetime-local") input.value = toInputDateTimeLocal(record[field.key]);
-      else input.value = record[field.key] ?? "";
+      if (field.readonlyOnEdit && "readOnly" in input) {
+        input.readOnly = isEdit;
+      }
+      if (field.disabledOnEdit && "disabled" in input) {
+        input.disabled = isEdit;
+      }
+      if (field.readonlyOnCreate && "readOnly" in input) {
+        input.readOnly = !isEdit;
+      }
+      if (field.disabledOnCreate && "disabled" in input) {
+        input.disabled = !isEdit;
+      }
 
-      if (field.readonlyOnEdit) {
-        input.readOnly = Boolean(record);
+      const hasValue = record && Object.prototype.hasOwnProperty.call(record, field.key);
+      if (field.type === "checkbox") {
+        input.checked = hasValue ? Boolean(record[field.key]) : false;
+      } else if (hasValue && field.type === "datetime-local") {
+        input.value = toInputDateTimeLocal(record[field.key]);
+      } else if (hasValue) {
+        input.value = record[field.key] ?? "";
+      } else if (field.defaultValue !== undefined && field.defaultValue !== null) {
+        input.value = field.defaultValue;
+      } else {
+        input.value = "";
       }
     });
 
@@ -371,11 +416,20 @@ export function initCollectionPage(config) {
     state.imageStates.forEach((_, key) => renderImagePreview(key));
   }
 
-  function openModal(record = null) {
-    state.editingId = record?.docId || null;
+  async function openModal(record = null) {
+    const isEdit = Boolean(record?.docId);
+    state.editingId = isEdit ? record.docId : null;
+
+    let formRecord = record;
+    if (!isEdit && typeof config.getCreateDefaults === "function") {
+      formRecord = await config.getCreateDefaults({
+        context: state.context
+      });
+    }
+
     elements.modal.classList.add("show");
-    elements.modalTitle.textContent = record ? `Chỉnh sửa ${config.title}` : `Thêm ${config.title}`;
-    fillForm(record);
+    elements.modalTitle.textContent = isEdit ? `Chỉnh sửa ${config.title}` : `Thêm ${config.title}`;
+    fillForm(formRecord, { isEdit });
   }
 
   function closeModal() {
@@ -417,7 +471,7 @@ export function initCollectionPage(config) {
   function collectRawPayload() {
     const raw = {};
     config.fields.forEach(field => {
-      const input = elements.form.elements[field.key];
+      const input = getFieldInput(field.key);
       if (!input) return;
       raw[field.key] = field.type === "checkbox" ? input.checked : input.value;
     });
